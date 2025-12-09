@@ -16,7 +16,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Perl
-        uses: actions/setup-perl@v2
+        # use the community setup-perl action (shogo82148)
+        uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
 
