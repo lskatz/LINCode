@@ -38,6 +38,4 @@ jobs:
           perl -MFile::Map -le 'print "File::Map ok"'
 
       - name: Run tests
-        run: |
-          # Run TAP tests in the test-anything-protocol directory
-          prove -v -l test-anything-protocol
+        run: prove -l t
