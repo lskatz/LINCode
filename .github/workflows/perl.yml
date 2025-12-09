@@ -1,0 +1,42 @@
+name: Perl CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        perl: [ '5.30', '5.32', '5.36' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Perl
+        uses: actions/setup-perl@v2
+        with:
+          perl-version: ${{ matrix.perl }}
+
+      - name: Install cpanminus
+        run: |
+          curl -L https://cpanmin.us | perl - --sudo App::cpanminus
+
+      - name: Install CPAN dependencies from Makefile.PL (may take a while)
+        run: |
+          # Install required modules declared in Makefile.PL (PDL, etc.)
+          cpanm --notest --installdeps .
+
+      - name: Show perl version and modules
+        run: |
+          perl -V
+          perl -MPDL -le 'print "PDL ok"'
+          perl -MPDL::IO::FastRaw -le 'print "PDL::IO::FastRaw ok"'
+          perl -MFile::Map -le 'print "File::Map ok"'
+
+      - name: Run tests
+        run: |
+          # Run TAP tests in the test-anything-protocol directory
+          prove -v -l test-anything-protocol
