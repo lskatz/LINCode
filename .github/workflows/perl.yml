@@ -13,21 +13,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4=
 
       - name: Setup Perl
-        uses: actions/setup-perl@v2
+        # use the community setup-perl action (shogo82148)
+        uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-
-      - name: Install cpanminus
-        run: |
-          curl -L https://cpanmin.us | perl - --sudo App::cpanminus
-
-      - name: Install CPAN dependencies from Makefile.PL (may take a while)
-        run: |
-          # Install required modules declared in Makefile.PL (PDL, etc.)
-          cpanm --notest --installdeps .
+          install-modules-with: cpanm
+          install-modules: PDL PDL::IO::FastRaw File::Map
+          enable-modules-cache: true
 
       - name: Show perl version and modules
         run: |
@@ -37,6 +32,4 @@ jobs:
           perl -MFile::Map -le 'print "File::Map ok"'
 
       - name: Run tests
-        run: |
-          # Run TAP tests in the test-anything-protocol directory
-          prove -v -l test-anything-protocol
+        run: prove -l t
